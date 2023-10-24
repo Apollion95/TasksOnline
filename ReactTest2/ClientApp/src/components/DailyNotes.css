@@ -1,0 +1,9 @@
+﻿.small-switch .react-switch-bg {
+    width: 36px; /* Set the width of the switch track */
+    height: 18px; /* Set the height of the switch track */
+}
+
+.small-switch .react-switch-handle {
+    width: 14px; /* Set the width of the switch handle */
+    height: 14px; /* Set the height of the switch handle */
+}

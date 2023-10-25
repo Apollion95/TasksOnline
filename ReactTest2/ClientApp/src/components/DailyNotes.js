@@ -16,16 +16,12 @@ export const DailyNotes = () => {
     const { taskID, taskTitle, taskDescription, isActive } = formData;
     const [data, setData] = useState([]);
     const [refresh, setRefresh] = useState(0)
-
-
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-
     const handleToggle = (checked) => {
         setFormData({ ...formData, isActive: checked });
     };
-
     const handleSubmit = (e) => {
         e.preventDefault();
         if (taskID && taskTitle && taskDescription) {
@@ -38,6 +34,7 @@ export const DailyNotes = () => {
         }
     };
 
+    //check edit
     const handleEdit = (id) => {
         axios.get(`http://localhost:3001/api/tasks/${id}`)
             .then(res => {

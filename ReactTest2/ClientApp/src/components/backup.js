@@ -4,10 +4,12 @@ import './DailyNotes.css';
 import axios from "axios";
 
 const API_URL = 'http://localhost:3001/api/tasks';
+const API_URL2 = 'https://jsonplaceholder.typicode.com/posts';
 
 export const DailyNotes = () => {
     const [formData, setFormData] = useState({
         taskID: "",
+        userID: "",
         taskTitle: "",
         taskDescription: "",
         isActive: false,
@@ -26,7 +28,7 @@ export const DailyNotes = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (taskID && taskTitle && taskDescription) {
-            axios.post(API_URL, formData)
+            axios.post(API_URL2, formData)
                 .then(res => {
                     setData([...data, res.data]);
                     setFormData({ taskID: "", taskTitle: "", taskDescription: "", isActive: false });
@@ -36,7 +38,7 @@ export const DailyNotes = () => {
     };
     const handleEdit = (editIDNotState) => {
         if (editID) {
-            axios.get(`${API_URL}/${editIDNotState}`)
+            axios.get(`${API_URL2}/${editIDNotState}`)
                 .then(res => {
                     setFormData(res.data);
                 })
@@ -47,14 +49,14 @@ export const DailyNotes = () => {
     };
 
     const handleDelete = (deleteID) => {
-        axios.delete(`${API_URL}/${deleteID}`)
+        axios.delete(`${API_URL2}/${deleteID}`)
             .then(res => {
             })
             .catch(err => console.log(err));
     };
     const handleUpdate = () => {
         if (taskID && taskTitle && taskDescription) {
-            axios.put(`${API_URL}/${editID}`, formData)
+            axios.put(`${API_URL2}/${editID}`, formData)
                 .then(res => {
                     setFormData({ taskID: "", taskTitle: "", taskDescription: "", isActive: false });
                     setRefresh(refresh + 1)
@@ -63,7 +65,7 @@ export const DailyNotes = () => {
         }
     };
     useEffect(() => {
-        axios.get(API_URL)
+        axios.get(API_URL2)
             .then(res => {
                 setData(res.data);
             })
@@ -132,6 +134,7 @@ export const DailyNotes = () => {
                         <thead>
                             <tr>
                                 <th>Task ID</th>
+                                <th>Task ID</th>
                                 <th>Task Title</th>
                                 <th>Task Description</th>
                                 <th>Status</th>
@@ -142,6 +145,7 @@ export const DailyNotes = () => {
                             {data.map((task, index) => (
                                 <tr key={index}>
                                     <td>{task.taskID}</td>
+                                    <td>{task.userID}</td>
                                     <td>{task.taskTitle}</td>
                                     <td>{task.taskDescription}</td>
                                     <td>{task.isActive ? 'Active' : 'Inactive'}</td>

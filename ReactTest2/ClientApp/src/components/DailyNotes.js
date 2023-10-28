@@ -7,7 +7,7 @@ const API_URL = 'http://localhost:3001/api/tasks';
 
 export const DailyNotes = () => {
     const [formData, setFormData] = useState({
-        taskID: "",
+        taskID: null,
         taskTitle: "",
         taskDescription: "",
         isActive: false,
@@ -33,8 +33,6 @@ export const DailyNotes = () => {
                 .catch(err => console.log(err));
         }
     };
-
-    //check edit
     const handleEdit = (id) => {
         axios.get(`http://localhost:3001/api/tasks/${id}`)
             .then(res => {
@@ -44,17 +42,17 @@ export const DailyNotes = () => {
             .catch(err => console.log(err));
     };
 
-    const handleDelete = (id) => {
-        axios.delete(`http://localhost:3001/api/tasks/${id}`)
+    const handleDelete = (DeleteId) => {
+        axios.delete(`http://localhost:3001/api/tasks/${DeleteId}`)
             .then(res => {
             })
             .catch(err => console.log(err));
     };
-    const handleUpdate = () => {
+    const handleUpdate = (editID) => {
         if (taskID && taskTitle && taskDescription) {
             axios.put(`http://localhost:3001/api/tasks/${editID}`, formData)
                 .then(res => {
-                    setFormData({ userId: "", id: "", title: "", body: "" });
+                    setFormData({ taskID: null, taskTitle: "", taskDescription: "", isActive: false });
                     setRefresh(refresh + 1)
                 })
                 .catch(err => console.log(err))
@@ -82,7 +80,7 @@ export const DailyNotes = () => {
                         <div className="form-group">
                             <label htmlFor="taskID">Task Title:</label>
                             <input
-                                type="number"
+                                type="text"
                                 className="form-control"
                                 id="taskID"
                                 placeholder="Enter Task ID"
@@ -123,13 +121,10 @@ export const DailyNotes = () => {
                             />
                             <span>{isActive ? 'Active' : 'Inactive'}</span>
                         </div>
-                        <button type="submit" className="btn btn-primary" onClick={() => { handleRefresh(); }}>
+                        <button type="submit" className="btn btn-primary" onClick={() =>  handleRefresh()}>
                             Submit
                         </button>
-                        <button type="submit" className="btn btn-primary" onClick={() => {
-                            handleUpdate();
-                            handleRefresh();
-                        }}>
+                        <button type="submit" className="btn btn-primary" onClick={() => handleUpdate()}>
                             Update
                         </button>
                     </form>
@@ -154,11 +149,8 @@ export const DailyNotes = () => {
                                     <td>
                                         <button className="btn btn-warning" onClick={() => handleEdit(task.taskID)}>
                                             Edit
-                                        </button>{" "}
-                                        <button className="btn btn-danger" onClick={() => {
-                                            handleDelete(task.taskID);
-                                            handleRefresh();//sprawdzic refresh
-                                        }}>
+                                        </button>
+                                        <button className="btn btn-danger" onClick={() => handleDelete(task.taskID)}>
                                             Delete
                                         </button>
                                     </td>

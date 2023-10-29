@@ -24,6 +24,8 @@ export class NavMenu extends Component {
     render() {
         return (
             <header>
+                <div className="Nav">
+                
                 <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" container light>
                     <NavbarBrand tag={Link} to="/">ReactTest2</NavbarBrand>
                     <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
@@ -37,7 +39,8 @@ export class NavMenu extends Component {
                             </NavItem>
                         </ul>
                     </Collapse>
-                </Navbar>
+                    </Navbar>
+                </div>
             </header>
         );
     }

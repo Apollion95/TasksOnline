@@ -7,21 +7,15 @@ const API_URL = 'http://localhost:3001/api/tasks';
 
 export const DailyNotes = () => {
     const [formData, setFormData] = useState({
-        taskID: '',
-        taskTitle: '',
-        taskDescription: '',
+        taskID: "",
+        taskTitle: "",
+        taskDescription: "",
         isActive: false,
     });
-    const [showCheckbox, setShowCheckbox] = useState(false);
-    const [filterValue, setFilterValue] = useState('');
     const [editID, setEditID] = useState()
     const [data, setData] = useState([]);
     const [refresh, setRefresh] = useState(0)
     const { taskID, taskTitle, taskDescription, isActive } = formData;
-
-    const filteredTasks = data.filter(task => {
-        return !showCheckbox || task.isActive; // If showCheckbox is true, include only active tasks
-    });
 
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,29 +25,27 @@ export const DailyNotes = () => {
     };
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (taskTitle && taskDescription) {
-            const newID = data.length > 0 ? Math.max(...data.map(task => parseInt(task.taskID, 10))) + 1 : 1;
-            const newTask = {
-                taskID: String(newID),
-                taskTitle: taskTitle,
-                taskDescription: taskDescription,
-                isActive: false,
-            }
-            axios.post(API_URL, newTask)
+        if (taskID && taskTitle && taskDescription) {
+            axios.post(API_URL, formData)
                 .then(res => {
                     setData([...data, res.data]);
-                    setFormData({ taskID: '', taskTitle: '', taskDescription: '', isActive: false });
+                    setFormData({ taskID: "", taskTitle: "", taskDescription: "", isActive: false });
                 })
                 .catch(err => console.log(err));
         }
     };
     const handleEdit = (editIDNotState) => {
-        axios.get(`${API_URL}/${editIDNotState}`)
-            .then(res => {
-                setFormData(res.data);
-            })
-            .catch(err => console.log(err));
+        if (editID) {
+            axios.get(`${API_URL}/${editIDNotState}`)
+                .then(res => {
+                    setFormData(res.data);
+                })
+                .catch(err => console.log(err));
+        } else {
+            console.log("Invalid ID");
+        }
     };
+
     const handleDelete = (deleteID) => {
         axios.delete(`${API_URL}/${deleteID}`)
             .then(res => {
@@ -64,7 +56,7 @@ export const DailyNotes = () => {
         if (taskID && taskTitle && taskDescription) {
             axios.put(`${API_URL}/${editID}`, formData)
                 .then(res => {
-                    setFormData({ taskID: '', taskTitle: '', taskDescription: '', isActive: false });
+                    setFormData({ taskID: "", taskTitle: "", taskDescription: "", isActive: false });
                     setRefresh(refresh + 1)
                 })
                 .catch(err => console.log(err))
@@ -88,14 +80,12 @@ export const DailyNotes = () => {
                                 type="text"
                                 className="form-control"
                                 id="taskID"
-                                placeholder="Task ID"
+                                placeholder="Enter Task ID"
                                 name="taskID"
                                 value={taskID}
                                 onChange={handleInputChange}
-                                disabled
                             />
-                        </div>
-                        <div className="form-group">
+                        </div><div className="form-group">
                             <label htmlFor="taskTitle">Task Title:</label>
                             <input
                                 type="text"
@@ -107,18 +97,18 @@ export const DailyNotes = () => {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <label htmlFor="taskDescription">Task Description:</label>
-                        <textarea
-                            className="form-control"
-                            id="taskDescription"
-                            placeholder="Enter Task Description"
-                            name="taskDescription"
-                            value={taskDescription}
-                            onChange={handleInputChange}
-                            rows="4"
-                            cols="40">
-                        </textarea>
-
+                        <div className="form-group">
+                            <label htmlFor="taskDescription">Task Description:</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="taskDescription"
+                                placeholder="Enter Task Description"
+                                name="taskDescription"
+                                value={taskDescription}
+                                onChange={handleInputChange}
+                            />
+                        </div>
                         <div className="form-group">
                             <label htmlFor="isActive">Task Status:</label>
                             <Switch
@@ -131,27 +121,14 @@ export const DailyNotes = () => {
                         <button type="submit" className="btn btn-primary">
                             Submit
                         </button>
-                        <button type="submit" className="btn btn-primary" onClick={() => refresh}> Clear
-                        </button>
                         <button type="submit" className="btn btn-primary" onClick={() => {
                             handleUpdate()
                         }}>
                             Update
                         </button>
-
                     </form>
                     <h2>Task List</h2>
-                    <div className="form-group">
-                        <label htmlFor="isActive"></label>
-                        <Switch
-                            onChange={() => setShowCheckbox(!showCheckbox)}
-                            checked={showCheckbox}
-                            className="react-switch"
-                        />
-                        <span>{showCheckbox ? 'Show Active' : 'Show All'}</span>
-                    </div>
-                
-                        <table className="table">
+                    <table className="table table-striped">
                         <thead>
                             <tr>
                                 <th>Task ID</th>
@@ -162,29 +139,27 @@ export const DailyNotes = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredTasks
-                                .filter(task => !filterValue || task.taskID === filterValue)
-                                .map((task, index) => (
-                                    <tr key={index}>
-                                        <td>{task.taskID}</td>
-                                        <td>{task.taskTitle}</td>
-                                        <td>{task.taskDescription}</td>
-                                        <td>{task.isActive ? 'Active' : 'Inactive'}</td>
-                                        <td>
-                                            <button className="btn btn-warning" onClick={() => {
-                                                handleEdit(task.taskID)
-                                                setEditID(task.taskID)
-                                            }}>
-                                                Edit
-                                            </button>
-                                            <button className="btn btn-danger" onClick={() => handleDelete(task.taskID)}>
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                            {data.map((task, index) => (
+                                <tr key={index}>
+                                    <td>{task.taskID}</td>
+                                    <td>{task.taskTitle}</td>
+                                    <td>{task.taskDescription}</td>
+                                    <td>{task.isActive ? 'Active' : 'Inactive'}</td>
+                                    <td>
+                                        <button className="btn btn-warning" onClick={() => {
+                                            handleEdit(task.taskID)
+                                            setEditID(task.taskID)
+                                        }}>
+                                            Edit
+                                        </button>
+                                        <button className="btn btn-danger" onClick={() => handleDelete(task.taskID)}>
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
-                        </table>
+                    </table>
                 </div>
             </div>
         </div>

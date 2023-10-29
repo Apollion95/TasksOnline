@@ -14,6 +14,7 @@ export const DailyNotes = () => {
     });
     const [showCheckbox, setShowCheckbox] = useState(false);
     const [filterValue, setFilterValue] = useState('');
+    const [updateButton, setUpdateButton] = useState();
     const [editID, setEditID] = useState()
     const [data, setData] = useState([]);
     const [refresh, setRefresh] = useState(0)
@@ -37,12 +38,12 @@ export const DailyNotes = () => {
                 taskID: String(newID),
                 taskTitle: taskTitle,
                 taskDescription: taskDescription,
-                isActive: false,
+                isActive: true,
             }
             axios.post(API_URL, newTask)
                 .then(res => {
                     setData([...data, res.data]);
-                    setFormData({ taskID: '', taskTitle: '', taskDescription: '', isActive: false });
+                    setFormData({ taskID: '', taskTitle: '', taskDescription: '', isActive: true });
                 })
                 .catch(err => console.log(err));
         }
@@ -57,6 +58,7 @@ export const DailyNotes = () => {
     const handleDelete = (deleteID) => {
         axios.delete(`${API_URL}/${deleteID}`)
             .then(res => {
+                setRefresh(refresh + 1)
             })
             .catch(err => console.log(err));
     };
@@ -64,7 +66,7 @@ export const DailyNotes = () => {
         if (taskID && taskTitle && taskDescription) {
             axios.put(`${API_URL}/${editID}`, formData)
                 .then(res => {
-                    setFormData({ taskID: '', taskTitle: '', taskDescription: '', isActive: false });
+                    setFormData({ taskID: '', taskTitle: '', taskDescription: '', isActive: true });
                     setRefresh(refresh + 1)
                 })
                 .catch(err => console.log(err))
@@ -131,18 +133,20 @@ export const DailyNotes = () => {
                         <button type="submit" className="btn btn-primary">
                             Submit
                         </button>
-                        <button type="submit" className="btn btn-primary" onClick={() => refresh}> Clear
+                        <button type="submit" className="btn btn-primary" onClick={() => setUpdateButton(false)}> Clear
                         </button>
+                        {updateButton &&(
                         <button type="submit" className="btn btn-primary" onClick={() => {
-                            handleUpdate()
+                                handleUpdate()
+                            setUpdateButton(false)
                         }}>
                             Update
-                        </button>
-
+                            </button>
+                        )}
                     </form>
                     <h2>Task List</h2>
                     <div className="form-group">
-                        <label htmlFor="isActive"></label>
+                        <label htmlFor="isShown"></label>
                         <Switch
                             onChange={() => setShowCheckbox(!showCheckbox)}
                             checked={showCheckbox}
@@ -174,6 +178,7 @@ export const DailyNotes = () => {
                                             <button className="btn btn-warning" onClick={() => {
                                                 handleEdit(task.taskID)
                                                 setEditID(task.taskID)
+                                                setUpdateButton(true)
                                             }}>
                                                 Edit
                                             </button>
